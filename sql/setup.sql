@@ -1,0 +1,1 @@
+CREATE TABLE emp (name TEXT PRIMARY KEY, age INT, city TEXT);
