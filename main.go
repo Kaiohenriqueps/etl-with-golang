@@ -7,5 +7,6 @@ import (
 
 func main() {
 	fmt.Println("Hello ETL!")
-	csvwrapper.FilterFile("data/example.csv")
+	csvwrapper.FilterFile("data/input/example.csv")
+	// sqlwrapper.ConnectToPostgres()
 }
