@@ -7,5 +7,5 @@ import (
 
 func main() {
 	fmt.Println("Hello ETL!")
-	csvwrapper.OpenFile("data/example.csv")
+	csvwrapper.FilterFile("data/example.csv")
 }
