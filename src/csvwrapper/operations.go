@@ -1,7 +1,7 @@
 package csvwrapper
 
 import (
-	"etl-with-golang/sqlwrapper"
+	"etl-with-golang/src/sqlwrapper"
 	"fmt"
 	"log"
 	"os"

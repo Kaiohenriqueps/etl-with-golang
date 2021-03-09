@@ -1,7 +1,7 @@
 package main
 
 import (
-	"etl-with-golang/csvwrapper"
+	"etl-with-golang/src/csvwrapper"
 	"fmt"
 )
 
