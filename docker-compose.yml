@@ -1,15 +1,6 @@
 version: '3'
 
 services:
-  # etl_with_golang:
-  #   build: ./Dockerfiles/etl
-  #   volumes:
-  #     - .:/var/etl_with_golang
-  #   entrypoint: "go run main.go"
-  #   depends_on:
-  #     - postgres
-  #   links:
-  #     - postgres
   postgres:
     image: postgres:latest
     environment:
@@ -20,17 +11,17 @@ services:
       - "5432:5432"
     networks:
       - postgres-network
-  # pgadmin:
-  #   image: dpage/pgadmin4
-  #   environment:
-  #     PGADMIN_DEFAULT_EMAIL: "kaiohenriqueps@gmail.com"
-  #     PGADMIN_DEFAULT_PASSWORD: "Password!"
-  #   ports:
-  #     - "16543:80"
-  #   depends_on:
-  #     - postgres
-  #   networks:
-  #     - postgres-network
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "kaiohenriqueps@gmail.com"
+      PGADMIN_DEFAULT_PASSWORD: "Password!"
+    ports:
+      - "16543:80"
+    depends_on:
+      - postgres
+    networks:
+      - postgres-network
 networks: 
   postgres-network:
     driver: bridge

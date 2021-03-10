@@ -2,27 +2,15 @@ package csvwrapper
 
 import (
 	"bufio"
-	"etl-with-golang/src/sqlwrapper"
-	"fmt"
+	"etl-with-golang/src/utils"
 	"log"
 	"os"
 	"strings"
 )
 
-// MyStruct é a estrutura do item de cada linha.
-type MyStruct struct {
-	cpf                string
-	private            string
-	incompleto         string
-	dataUltimaCompra   string
-	ticketMedio        string
-	ticketUltimaCompra string
-	lojaMaisFrequente  string
-	lojaUltimaCompra   string
-}
-
-// OpenFile é uma função que lê um arquivo e retorna o arquivo em si.
-func OpenFile(path string) []MyStruct {
+// OpenFileAndCreateStruct é uma função que lê um arquivo e retorna o arquivo em si.
+// @param path: caminho do arquivo que será processado.
+func OpenFileAndCreateStruct(path string) []utils.MyStruct {
 	csvfile, err := os.Open(path)
 	if err != nil {
 		log.Println("Não conseguiu abrir o arquivo")
@@ -39,45 +27,32 @@ func OpenFile(path string) []MyStruct {
 	}
 
 	csvfile.Close()
-
 	return CreateStruct(fileTextLines)
 }
 
 // CreateStruct é uma função que cria um array de MyStruct.
-func CreateStruct(fileTextLines []string) []MyStruct {
-	var objs []MyStruct
+// @param fileTextLines: linhas do arquivo que será processado.
+func CreateStruct(fileTextLines []string) []utils.MyStruct {
+	var objs []utils.MyStruct
 
 	for _, line := range fileTextLines {
 		fields := strings.Fields(line)
 		if fields[0] == "CPF" {
 			continue
 		}
-		item := MyStruct{
-			cpf:                fields[0],
-			private:            fields[1],
-			incompleto:         fields[2],
-			dataUltimaCompra:   fields[3],
-			ticketMedio:        fields[4],
-			ticketUltimaCompra: fields[5],
-			lojaMaisFrequente:  fields[6],
-			lojaUltimaCompra:   fields[7],
+		if utils.VerificaCpf(fields[0]) {
+			item := utils.MyStruct{
+				Cpf:                fields[0],
+				Private:            fields[1],
+				Incompleto:         fields[2],
+				DataUltimaCompra:   fields[3],
+				TicketMedio:        fields[4],
+				TicketUltimaCompra: fields[5],
+				LojaMaisFrequente:  fields[6],
+				LojaUltimaCompra:   fields[7],
+			}
+			objs = append(objs, item)
 		}
-
-		objs = append(objs, item)
 	}
 	return objs
-}
-
-// InsertStructs é uma função que insere as MyStructs na tabela do postgres.
-func InsertStructs(path string) {
-	objs := OpenFile(path)
-
-	conn := sqlwrapper.ConnectToPostgres()
-
-	for _, item := range objs {
-		values := fmt.Sprintf("'%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s'",
-			item.cpf, item.private, item.incompleto, item.dataUltimaCompra, item.ticketMedio,
-			item.ticketUltimaCompra, item.lojaMaisFrequente, item.lojaUltimaCompra)
-		sqlwrapper.InsertIntoTable(conn, "compras", values)
-	}
 }
