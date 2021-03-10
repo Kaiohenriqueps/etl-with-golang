@@ -2,11 +2,12 @@ package main
 
 import (
 	"etl-with-golang/src/csvwrapper"
-	"fmt"
+	"log"
+	"time"
 )
 
 func main() {
-	fmt.Println("Hello ETL!")
-	csvwrapper.FilterFile("data/input/example.csv")
-	// sqlwrapper.ConnectToPostgres()
+	init := time.Now()
+	csvwrapper.InsertStructs("data/base_teste.txt")
+	log.Println(time.Now().Sub(init))
 }
