@@ -28,7 +28,7 @@ func OpenFile(path string) []MyStruct {
 		log.Println("Não conseguiu abrir o arquivo")
 		log.Fatal(err)
 	}
-	log.Println("Abriu com sucesso!")
+	log.Println("Abriu o arquivo com sucesso!")
 
 	fileScanner := bufio.NewScanner(csvfile)
 	fileScanner.Split(bufio.ScanLines)
@@ -40,6 +40,11 @@ func OpenFile(path string) []MyStruct {
 
 	csvfile.Close()
 
+	return CreateStruct(fileTextLines)
+}
+
+// CreateStruct é uma função que cria um array de MyStruct.
+func CreateStruct(fileTextLines []string) []MyStruct {
 	var objs []MyStruct
 
 	for _, line := range fileTextLines {
@@ -63,8 +68,8 @@ func OpenFile(path string) []MyStruct {
 	return objs
 }
 
-// FilterFile é uma função que filtra um dataframe de acordo com uma regra.
-func FilterFile(path string) {
+// InsertStructs é uma função que insere as MyStructs na tabela do postgres.
+func InsertStructs(path string) {
 	objs := OpenFile(path)
 
 	conn := sqlwrapper.ConnectToPostgres()
