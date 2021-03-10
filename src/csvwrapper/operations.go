@@ -1,55 +1,78 @@
 package csvwrapper
 
 import (
+	"bufio"
 	"etl-with-golang/src/sqlwrapper"
 	"fmt"
 	"log"
 	"os"
-	"strconv"
-
-	"github.com/kniren/gota/dataframe"
+	"strings"
 )
 
+// MyStruct é a estrutura do item de cada linha.
+type MyStruct struct {
+	cpf                string
+	private            string
+	incompleto         string
+	dataUltimaCompra   string
+	ticketMedio        string
+	ticketUltimaCompra string
+	lojaMaisFrequente  string
+	lojaUltimaCompra   string
+}
+
 // OpenFile é uma função que lê um arquivo e retorna o arquivo em si.
-func OpenFile(path string) *os.File {
+func OpenFile(path string) []MyStruct {
 	csvfile, err := os.Open(path)
 	if err != nil {
+		log.Println("Não conseguiu abrir o arquivo")
 		log.Fatal(err)
 	}
-	return csvfile
+	log.Println("Abriu com sucesso!")
+
+	fileScanner := bufio.NewScanner(csvfile)
+	fileScanner.Split(bufio.ScanLines)
+	var fileTextLines []string
+
+	for fileScanner.Scan() {
+		fileTextLines = append(fileTextLines, fileScanner.Text())
+	}
+
+	csvfile.Close()
+
+	var objs []MyStruct
+
+	for _, line := range fileTextLines {
+		fields := strings.Fields(line)
+		if fields[0] == "CPF" {
+			continue
+		}
+		item := MyStruct{
+			cpf:                fields[0],
+			private:            fields[1],
+			incompleto:         fields[2],
+			dataUltimaCompra:   fields[3],
+			ticketMedio:        fields[4],
+			ticketUltimaCompra: fields[5],
+			lojaMaisFrequente:  fields[6],
+			lojaUltimaCompra:   fields[7],
+		}
+
+		objs = append(objs, item)
+	}
+	return objs
 }
 
 // FilterFile é uma função que filtra um dataframe de acordo com uma regra.
 func FilterFile(path string) {
-	csvfile := OpenFile(path)
-	df := dataframe.ReadCSV(csvfile)
+	objs := OpenFile(path)
 
-	fil := df.Filter(dataframe.F{
-		Colname:    "age",
-		Comparator: ">",
-		Comparando: 20,
-	})
-
-	rows := fil.Nrow()
 	conn := sqlwrapper.ConnectToPostgres()
-	for i := 0; i < rows; i++ {
-		name := fil.Elem(i, 0).String()
-		age, err := strconv.Atoi(fil.Elem(i, 1).String())
-		if err != nil {
-			log.Fatal(err)
-		}
-		city := fil.Elem(i, 2).String()
-		values := fmt.Sprintf("'%s', %d, '%s'", name, age, city)
-		sqlwrapper.InsertIntoTable(conn, "emp", values)
-	}
-	// SaveAsCsv(fil)
-}
 
-// SaveAsCsv é uma função que salva um dataframe no formato CSV.
-func SaveAsCsv(df dataframe.DataFrame) {
-	f, err := os.Create("data/output/output.csv")
-	if err != nil {
-		log.Fatal(err)
+	for _, item := range objs {
+		values := fmt.Sprintf("'%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s'",
+			item.cpf, item.private, item.incompleto, item.dataUltimaCompra, item.ticketMedio,
+			item.ticketUltimaCompra, item.lojaMaisFrequente, item.lojaUltimaCompra)
+		sqlwrapper.InsertIntoTable(conn, "compras", values)
 	}
-	df.WriteCSV(f)
 }
