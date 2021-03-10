@@ -1,1 +1,1 @@
-CREATE TABLE emp (name TEXT PRIMARY KEY, age INT, city TEXT);
+CREATE TABLE compras (cpf TEXT PRIMARY KEY, private TEXT, incompleto TEXT, dataUltimaCompra TEXT, ticketMedio TEXT, ticketUltimaCompra TEXT, lojaMaisFrequente TEXT, lojaUltimaCompra TEXT);

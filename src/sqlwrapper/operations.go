@@ -38,7 +38,7 @@ func InsertIntoTable(db *sql.DB, tableName string, values string) {
 	db.SetMaxIdleConns(10)
 	db.SetMaxOpenConns(10)
 
-	query := fmt.Sprintf(`INSERT INTO emp (name, age, city) VALUES (%s);`, values)
+	query := fmt.Sprintf(`INSERT INTO compras (cpf, private, incompleto, dataUltimaCompra, ticketMedio, ticketUltimaCompra, lojaMaisFrequente, lojaUltimaCompra) VALUES (%s);`, values)
 	fmt.Println(query)
 
 	_, err := db.Exec(query)
