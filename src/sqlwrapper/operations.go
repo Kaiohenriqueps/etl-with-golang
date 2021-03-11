@@ -5,6 +5,7 @@ import (
 	"etl-with-golang/src/utils"
 	"fmt"
 	"log"
+	"strings"
 
 	_ "github.com/lib/pq"
 )
@@ -16,6 +17,12 @@ const (
 	password = "mypassword"
 	dbname   = "postgres"
 )
+
+// Colunas da tabela
+var columns = []string{
+	"cpf", "private", "incompleto", "dataUltimaCompra",
+	"ticketMedio", "ticketUltimaCompra", "lojaMaisFrequente",
+	"lojaUltimaCompra", "flagCPF", "flagCNPJFrequente", "flagCNPJUltima"}
 
 // ConnectToPostgres é uma função que irá se conectar com o postgres.
 func ConnectToPostgres() *sql.DB {
@@ -40,9 +47,9 @@ func InsertStructs(objs []utils.MyStruct) {
 	conn := ConnectToPostgres()
 
 	for _, item := range objs {
-		values := fmt.Sprintf("'%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s'",
+		values := fmt.Sprintf("'%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s'",
 			item.Cpf, item.Private, item.Incompleto, item.DataUltimaCompra, item.TicketMedio,
-			item.TicketUltimaCompra, item.LojaMaisFrequente, item.LojaUltimaCompra)
+			item.TicketUltimaCompra, item.LojaMaisFrequente, item.LojaUltimaCompra, item.FlagCPF, item.FlagCNPJFrequente, item.FlagCNPJUltima)
 		InsertIntoTable(conn, "compras", values)
 	}
 
@@ -53,12 +60,7 @@ func InsertStructs(objs []utils.MyStruct) {
 // @param tableName: nome da tabela que será populada.
 // @param values: valores que serão inseridos na tabela.
 func InsertIntoTable(db *sql.DB, tableName string, values string) {
-	// db.SetMaxIdleConns(150)
-	// db.SetMaxOpenConns(150)
-
-	query := fmt.Sprintf(`INSERT INTO %s (cpf, private, incompleto, dataUltimaCompra, `+
-		`ticketMedio, ticketUltimaCompra, lojaMaisFrequente, lojaUltimaCompra) VALUES (%s);`,
-		tableName, values)
+	query := fmt.Sprintf(`INSERT INTO %s (%s) VALUES (%s);`, tableName, strings.Join(columns, ","), values)
 
 	_, err := db.Exec(query)
 	if err != nil {
