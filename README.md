@@ -24,7 +24,7 @@ $ docker-compose logs -f pgadmin
 ```
 
 ## Próximos passos
-Após os serviços serem iniciados, deve-se colocar no arquivo de input dentro da pasta *data*, que está presente na pasta raiz do projeto. Caso prefira, coloque na pasta raiz. O importante é passar o caminho correto do arquivo na hora de iniciar o script Go.
+Após os serviços serem iniciados, deve-se passar como parâmetro do script o caminho do local onde o arquivo está. Como sugestão, coloque o arquivo dentro da pasta raiz do projeto.
 
 ## Rodando o script
 Deve-se usar o seguinte comando:
