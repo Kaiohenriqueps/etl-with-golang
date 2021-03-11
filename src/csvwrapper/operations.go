@@ -30,21 +30,27 @@ func OpenFileAndCreateStruct(path string) []utils.MyStruct {
 	return CreateStruct(fileTextLines)
 }
 
+// LimpaCampos é uma função que faz uma higienização básica do campo.
+func LimpaCampos(item utils.MyStruct) utils.MyStruct {
+	item.Cpf = utils.LimpaCampo(item.Cpf, `\W`)
+	item.LojaMaisFrequente = utils.LimpaCampo(item.LojaMaisFrequente, `\W`)
+	item.LojaUltimaCompra = utils.LimpaCampo(item.LojaUltimaCompra, `\W`)
+	return item
+}
+
 // VerificaDocs é uma função que verifica se os documentos são válidos.
 // @param item: struct do registro.
 func VerificaDocs(item utils.MyStruct) utils.MyStruct {
 	if utils.VerificaDocumento(item.Cpf, "cpf") {
-		item.Cpf = utils.LimpaCampo(item.Cpf, `\W`)
 		item.FlagCPF = "Válido"
 	}
 	if utils.VerificaDocumento(item.LojaMaisFrequente, "cnpj") {
-		item.FlagCNPJFrequente = utils.LimpaCampo(item.FlagCNPJFrequente, `\W`)
 		item.FlagCNPJFrequente = "Válido"
 	}
 	if utils.VerificaDocumento(item.LojaUltimaCompra, "cnpj") {
-		item.FlagCNPJUltima = utils.LimpaCampo(item.FlagCNPJUltima, `\W`)
 		item.FlagCNPJUltima = "Válido"
 	}
+
 	return item
 }
 
@@ -63,19 +69,17 @@ func CreateStruct(fileTextLines []string) []utils.MyStruct {
 			Cpf:                fields[0],
 			Private:            fields[1],
 			Incompleto:         fields[2],
-			DataUltimaCompra:   fields[3],
-			TicketMedio:        fields[4],
-			TicketUltimaCompra: fields[5],
+			DataUltimaCompra:   utils.VerificaValor(fields[3], "data"),
+			TicketMedio:        utils.PreparaNumerico(utils.VerificaValor(fields[4], "numerico")),
+			TicketUltimaCompra: utils.PreparaNumerico(utils.VerificaValor(fields[5], "numerico")),
 			LojaMaisFrequente:  fields[6],
 			LojaUltimaCompra:   fields[7],
 			FlagCPF:            "Inválido",
 			FlagCNPJFrequente:  "Inválido",
 			FlagCNPJUltima:     "Inválido",
 		}
-
-		newItem := VerificaDocs(item)
-
-		objs = append(objs, newItem)
+		item = LimpaCampos(VerificaDocs(item))
+		objs = append(objs, item)
 
 	}
 	return objs

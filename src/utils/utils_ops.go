@@ -1,6 +1,9 @@
 package utils
 
-import "regexp"
+import (
+	"regexp"
+	"strings"
+)
 
 // MyStruct é a estrutura do item de cada linha.
 type MyStruct struct {
@@ -20,8 +23,13 @@ type MyStruct struct {
 // Regex é uma variável que contém os regex dos documentos.
 var Regex = map[string]string{
 	"cpf":  `\d{3}\.\d{3}\.\d{3}\-\d{2}`,
-	"cnpj": `\d{2}\.\d{3}\.\d{3}\/\d{4}\-\d{2}`,
-}
+	"cnpj": `\d{2}\.\d{3}\.\d{3}\/\d{4}\-\d{2}`}
+
+// Data padrao.
+var valoresPadrao = map[string]string{
+	"data":     "1111-01-01",
+	"numerico": "0",
+	"text":     ""}
 
 // ChunkSlice é um método que divide um array em array menores.
 func ChunkSlice(slice []MyStruct, chunkSize int) [][]MyStruct {
@@ -50,4 +58,21 @@ func LimpaCampo(str string, regex string) string {
 	}
 	reg := regexp.MustCompile(regex)
 	return reg.ReplaceAllString(str, "")
+}
+
+// VerificaValor é uma função que recebe um valor, caso ele seja vazio ou NULL, retorna um valor padrão.
+// Caso contrário, retorna o valor do campo.
+func VerificaValor(data string, valueType string) string {
+	if data == "NULL" || data == "" {
+		return valoresPadrao[valueType]
+	}
+	return data
+}
+
+// PreparaNumerico é uma função que prepara a string para a inserção de um numérico.
+func PreparaNumerico(numero string) string {
+	if strings.Contains(numero, ",") {
+		return strings.ReplaceAll(numero, ",", ".")
+	}
+	return numero
 }
