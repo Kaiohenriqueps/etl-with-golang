@@ -12,6 +12,15 @@ type MyStruct struct {
 	TicketUltimaCompra string
 	LojaMaisFrequente  string
 	LojaUltimaCompra   string
+	FlagCPF            string
+	FlagCNPJFrequente  string
+	FlagCNPJUltima     string
+}
+
+// Regex é uma variável que contém os regex dos documentos.
+var Regex = map[string]string{
+	"cpf":  `\d{3}\.\d{3}\.\d{3}\-\d{2}`,
+	"cnpj": `\d{2}\.\d{3}\.\d{3}\/\d{4}\-\d{2}`,
 }
 
 // ChunkSlice é um método que divide um array em array menores.
@@ -20,8 +29,6 @@ func ChunkSlice(slice []MyStruct, chunkSize int) [][]MyStruct {
 	for i := 0; i < len(slice); i += chunkSize {
 		end := i + chunkSize
 
-		// necessary check to avoid slicing beyond
-		// slice capacity
 		if end > len(slice) {
 			end = len(slice)
 		}
@@ -30,8 +37,17 @@ func ChunkSlice(slice []MyStruct, chunkSize int) [][]MyStruct {
 	return chunks
 }
 
-// VerificaCpf é uma função que verifica se o CPF é válido.
-func VerificaCpf(cpf string) bool {
-	match, _ := regexp.MatchString(`\d{3}\.\d{3}\.\d{3}\-\d{2}`, cpf)
+// VerificaDocumento é uma função que verifica se o CNPJ ou CPF são válidos.
+func VerificaDocumento(doc string, docType string) bool {
+	match, _ := regexp.MatchString(Regex[docType], doc)
 	return match
+}
+
+// LimpaCampo é uma função que recebe uma string e retira os caracteres especiais.
+func LimpaCampo(str string, regex string) string {
+	if str == "NULL" || str == "" {
+		return ""
+	}
+	reg := regexp.MustCompile(regex)
+	return reg.ReplaceAllString(str, "")
 }

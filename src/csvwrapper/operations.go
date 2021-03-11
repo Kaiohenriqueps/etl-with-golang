@@ -30,6 +30,24 @@ func OpenFileAndCreateStruct(path string) []utils.MyStruct {
 	return CreateStruct(fileTextLines)
 }
 
+// VerificaDocs é uma função que verifica se os documentos são válidos.
+// @param item: struct do registro.
+func VerificaDocs(item utils.MyStruct) utils.MyStruct {
+	if utils.VerificaDocumento(item.Cpf, "cpf") {
+		item.Cpf = utils.LimpaCampo(item.Cpf, `\W`)
+		item.FlagCPF = "Válido"
+	}
+	if utils.VerificaDocumento(item.LojaMaisFrequente, "cnpj") {
+		item.FlagCNPJFrequente = utils.LimpaCampo(item.FlagCNPJFrequente, `\W`)
+		item.FlagCNPJFrequente = "Válido"
+	}
+	if utils.VerificaDocumento(item.LojaUltimaCompra, "cnpj") {
+		item.FlagCNPJUltima = utils.LimpaCampo(item.FlagCNPJUltima, `\W`)
+		item.FlagCNPJUltima = "Válido"
+	}
+	return item
+}
+
 // CreateStruct é uma função que cria um array de MyStruct.
 // @param fileTextLines: linhas do arquivo que será processado.
 func CreateStruct(fileTextLines []string) []utils.MyStruct {
@@ -40,19 +58,25 @@ func CreateStruct(fileTextLines []string) []utils.MyStruct {
 		if fields[0] == "CPF" {
 			continue
 		}
-		if utils.VerificaCpf(fields[0]) {
-			item := utils.MyStruct{
-				Cpf:                fields[0],
-				Private:            fields[1],
-				Incompleto:         fields[2],
-				DataUltimaCompra:   fields[3],
-				TicketMedio:        fields[4],
-				TicketUltimaCompra: fields[5],
-				LojaMaisFrequente:  fields[6],
-				LojaUltimaCompra:   fields[7],
-			}
-			objs = append(objs, item)
+
+		item := utils.MyStruct{
+			Cpf:                fields[0],
+			Private:            fields[1],
+			Incompleto:         fields[2],
+			DataUltimaCompra:   fields[3],
+			TicketMedio:        fields[4],
+			TicketUltimaCompra: fields[5],
+			LojaMaisFrequente:  fields[6],
+			LojaUltimaCompra:   fields[7],
+			FlagCPF:            "Inválido",
+			FlagCNPJFrequente:  "Inválido",
+			FlagCNPJUltima:     "Inválido",
 		}
+
+		newItem := VerificaDocs(item)
+
+		objs = append(objs, newItem)
+
 	}
 	return objs
 }
