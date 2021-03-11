@@ -44,3 +44,20 @@ Foi feito um trabalho de higienização dos dados da seguinte forma:
 2) Campo de cnpj: sem caracteres especiais;
 3) Campo do tipo data: caso a data não esteja preenchida, foi colocado um valor padrão de "1111-01-01";
 4) Campos do tipo numérico: caso o valor não esteja preenchido, foi colocado um valor padrão de "0";
+
+## Criação da tabela no Postgres
+Foi criado uma tabela com o nome *compras*, com o campo cpf como primary key, no Postgres com o seguinte esquema:
+
+| nome_coluna | tipo_coluna |
+| ----------- | ----------- |
+| cpf | TEXT |
+| private | NUMERIC |
+| incompleto | NUMERIC |
+| dataultimacompra | DATE |
+| ticketmedio | NUMERIC |
+| ticketultimacompra | NUMERIC |
+| lojamaisfrequente | TEXT |
+| lojaultimacompra | TEXT |
+| flagcpf | TEXT |
+| flagcnpjfrequente | TEXT |
+| flagcnpjultima | TEXT |

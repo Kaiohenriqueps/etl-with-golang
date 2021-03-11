@@ -1,1 +1,1 @@
-CREATE TABLE compras (cpf TEXT PRIMARY KEY, private NUMERIC, incompleto NUMERIC, dataUltimaCompra DATE, ticketMedio NUMERIC, ticketUltimaCompra NUMERIC, lojaMaisFrequente TEXT, lojaUltimaCompra TEXT, flagCPF TEXT, flagCNPJFrequente TEXT, flagCNPJultima TEXT);
+CREATE TABLE compras (cpf TEXT PRIMARY KEY, private NUMERIC, incompleto NUMERIC, dataultimacompra DATE, ticketmedio NUMERIC, ticketultimacompra NUMERIC, lojamaisfrequente TEXT, lojaultimacompra TEXT, flagcpf TEXT, flagcnpjfrequente TEXT, flagcnpjultima TEXT);
