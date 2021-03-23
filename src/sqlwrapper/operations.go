@@ -5,17 +5,10 @@ import (
 	"etl-with-golang/src/utils"
 	"fmt"
 	"log"
-	"strings"
+	"os"
 
+	"github.com/lib/pq"
 	_ "github.com/lib/pq"
-)
-
-const (
-	host     = "localhost"
-	port     = 5432
-	user     = "postgres"
-	password = "mypassword"
-	dbname   = "postgres"
 )
 
 // Colunas da tabela
@@ -27,8 +20,8 @@ var columns = []string{
 // ConnectToPostgres é uma função que irá se conectar com o postgres.
 func ConnectToPostgres() *sql.DB {
 	psqlInfo := fmt.Sprintf(
-		"host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
-		host, port, user, password, dbname)
+		"host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
+		os.Getenv("HOST"), os.Getenv("PORT"), os.Getenv("USER"), os.Getenv("PASS"), os.Getenv("DBNAME"))
 
 	db, err := sql.Open("postgres", psqlInfo)
 	if err != nil {
@@ -45,25 +38,36 @@ func ConnectToPostgres() *sql.DB {
 // @param objs: array de MyStructs.
 func InsertStructs(objs []utils.MyStruct) {
 	conn := ConnectToPostgres()
-
-	for _, item := range objs {
-		values := fmt.Sprintf("'%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s'",
-			item.Cpf, item.Private, item.Incompleto, item.DataUltimaCompra, item.TicketMedio,
-			item.TicketUltimaCompra, item.LojaMaisFrequente, item.LojaUltimaCompra, item.FlagCPF, item.FlagCNPJFrequente, item.FlagCNPJUltima)
-		InsertIntoTable(conn, "compras", values)
-	}
-
-}
-
-// InsertIntoTable é uma função que insere as MyStructs na tabela do postgres.
-// @param db: conexão do banco de dados.
-// @param tableName: nome da tabela que será populada.
-// @param values: valores que serão inseridos na tabela.
-func InsertIntoTable(db *sql.DB, tableName string, values string) {
-	query := fmt.Sprintf(`INSERT INTO %s (%s) VALUES (%s);`, tableName, strings.Join(columns, ","), values)
-
-	_, err := db.Exec(query)
+	txn, err := conn.Begin()
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	stmt, err := txn.Prepare(pq.CopyIn("compras", "cpf", "private", "incompleto", "dataultimacompra", "ticketmedio", "ticketultimacompra",
+		"lojamaisfrequente", "lojaultimacompra", "flagcpf", "flagcnpjfrequente", "flagcnpjultima"))
+
+	for _, item := range objs {
+		_, err = stmt.Exec(string(item.Cpf), string(item.Private), string(item.Incompleto), string(item.DataUltimaCompra),
+			string(item.TicketMedio), string(item.TicketUltimaCompra), string(item.LojaMaisFrequente), string(item.LojaUltimaCompra),
+			string(item.FlagCPF), string(item.FlagCNPJFrequente), string(item.FlagCNPJUltima))
+
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+	_, err = stmt.Exec()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = stmt.Close()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = txn.Commit()
+	if err != nil {
+		log.Fatal(err)
+	}
+
 }
