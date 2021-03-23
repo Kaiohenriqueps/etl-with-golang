@@ -1,6 +1,16 @@
 version: '3'
 
 services:
+  etl:
+    build: ./Dockerfiles/golang
+    env_file: .env
+    volumes:
+      - .:/var/etl
+    depends_on:
+      - postgres
+    networks:
+      - postgres-network
+    command: go run main.go $DATA_PATH
   postgres:
     image: postgres:latest
     environment:
