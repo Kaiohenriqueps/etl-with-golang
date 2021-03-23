@@ -3,15 +3,7 @@ An ETL project with Golang!
 
 ## Pré requisitos:
 1) Docker instalado na máquina;
-2) Golang;
-3) Instalar a biblioteca *lib/pq*;
-4) Criar um arquivo .env na pasta raíz do projeto.
-
-## Instalando a biblioteca do lib/pq
-Rodar o seguinte comando no seu shell
-```
-$ go get -u github.com/lib/pq
-```
+2) Criar um arquivo .env na pasta raíz do projeto.
 
 ## Criando o arquivo .env
 Dentro do arquivo, é preciso ter as seguintes informações:
@@ -21,6 +13,7 @@ PORT=<port_postgres>
 USER=<user_postgres>
 PASS=<pass_postgres>
 DBNAME=<database_name_postgres>
+DATA_PATH=<caminho_ate_o_arquivo_de_teste>
 ```
 
 ## Subindo os serviços do Docker
@@ -33,14 +26,9 @@ $ docker-compose up -d
 $ docker-compose logs -f postgres
 $ docker-compose logs -f pgadmin
 ```
-
-## Próximos passos
-Após os serviços serem iniciados, deve-se passar como parâmetro do script o caminho do local onde o arquivo está. Como sugestão, coloque o arquivo dentro da pasta raiz do projeto.
-
-## Rodando o script
-Deve-se usar o seguinte comando:
+- Para verificar quanto tempo levou para a inserção dos dados no postgres, verifique os logs do serviço *etl* com o seguinte comando:
 ```
-$ go run main.go <caminho_do_arquivo>
+$ docker-compose logs -f etl
 ```
 
 ## Conferindo o resultado no PgAdmin
