@@ -2,14 +2,25 @@
 An ETL project with Golang!
 
 ## Pré requisitos:
-1) Docker instalado na máquina.
-2) Golang.
-3) Instalar a biblioteca *lib/pq*
+1) Docker instalado na máquina;
+2) Golang;
+3) Instalar a biblioteca *lib/pq*;
+4) Criar um arquivo .env na pasta raíz do projeto.
 
 ## Instalando a biblioteca do lib/pq
 Rodar o seguinte comando no seu shell
 ```
 $ go get -u github.com/lib/pq
+```
+
+## Criando o arquivo .env
+Dentro do arquivo, é preciso ter as seguintes informações:
+```
+HOST=<hostname_postgres>
+PORT=<port_postgres>
+USER=<user_postgres>
+PASS=<pass_postgres>
+DBNAME=<database_name_postgres>
 ```
 
 ## Subindo os serviços do Docker
@@ -44,6 +55,7 @@ Foi feito um trabalho de higienização dos dados da seguinte forma:
 2) Campo de cnpj: sem caracteres especiais;
 3) Campo do tipo data: caso a data não esteja preenchida, foi colocado um valor padrão de "1111-01-01";
 4) Campos do tipo numérico: caso o valor não esteja preenchido, foi colocado um valor padrão de "0";
+5) Campos do tipo texto: caso o valor não esteja preenchido, foi colocado um valor padrão de "NA".
 
 ## Criação da tabela no Postgres
 Foi criado uma tabela com o nome *compras*, com o campo cpf como primary key, no Postgres com o seguinte esquema:

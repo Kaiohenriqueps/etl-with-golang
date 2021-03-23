@@ -29,21 +29,7 @@ var Regex = map[string]string{
 var valoresPadrao = map[string]string{
 	"data":     "1111-01-01",
 	"numerico": "0",
-	"text":     ""}
-
-// ChunkSlice é um método que divide um array em array menores.
-func ChunkSlice(slice []MyStruct, chunkSize int) [][]MyStruct {
-	var chunks [][]MyStruct
-	for i := 0; i < len(slice); i += chunkSize {
-		end := i + chunkSize
-
-		if end > len(slice) {
-			end = len(slice)
-		}
-		chunks = append(chunks, slice[i:end])
-	}
-	return chunks
-}
+	"text":     "NA"}
 
 // VerificaDocumento é uma função que verifica se o CNPJ ou CPF são válidos.
 func VerificaDocumento(doc string, docType string) bool {
